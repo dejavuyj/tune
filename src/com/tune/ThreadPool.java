@@ -30,6 +30,22 @@ public class ThreadPool {
         }
     }
 
+    private static void exec_oom(ExecutorService service) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        System.out.println(sdf.format(new Date()) + " start");
+        Integer n = 1;
+        while (n <= 500000000) {
+            Run r = new Run();
+            r.setName(n.toString());
+            service.submit(r);
+            if (n % 100 == 0) {
+                System.out.println(" n = " + n + ", s: " + service);
+            }
+            n++;
+        }
+        service.shutdown();
+    }
+
     private static void exec(ExecutorService service) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         System.out.println(sdf.format(new Date()) + " start");
@@ -135,11 +151,11 @@ public class ThreadPool {
 
 
     public static void main(String[] args) throws InterruptedException {
-//        fix();
+        fix();
 //        cache();
 //        single();
 //        scheduled();
 //        fork();
-        custom();
+//        custom();
     }
 }
