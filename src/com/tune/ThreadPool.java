@@ -142,6 +142,7 @@ public class ThreadPool {
 
     private static void custom() {
         // 使用默认的ThreadPoolExecutor构造器 队列 拒绝策略
+        // https://www.jianshu.com/p/c41e942bcd64
         // https://upload-images.jianshu.io/upload_images/11183270-a01aea078d7f4178.png?imageMogr2/auto-orient/strip|imageView2/2/w/1200/format/webp
         ExecutorService s = new ThreadPoolExecutor(2, 3,
                 0L, TimeUnit.MILLISECONDS,
