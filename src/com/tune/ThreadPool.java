@@ -87,14 +87,14 @@ public class ThreadPool {
             Run r = new Run();
             r.setName(n.toString());
             // 2秒后执行所有任务,但是核心线程数被占满了,只能等待释放 需要调用shutdown来关闭ExecutorService
-            s.schedule(r, 2, TimeUnit.SECONDS);
-            // 每隔3秒执行所有任务,但是核心线程数被占满了,只能等待释放 需要注释掉shutdown,否则直接退出
+//            s.schedule(r, 2, TimeUnit.SECONDS);
+            // 每隔3秒周期性执行所有任务,但是核心线程数被占满了,只能等待释放 需要注释掉shutdown,否则直接退出
 //            s.scheduleAtFixedRate(r, 1, 3, TimeUnit.SECONDS);
-            // 上一批任务执行完成后,等待3秒,再执行下一批任务,但是核心线程数被占满了,只能等待释放 需要注释掉shutdown,否则直接退出
-//            s.scheduleWithFixedDelay(r, 1, 3, TimeUnit.SECONDS);
+            // 上一批任务执行完成后,等待3秒,再周期性执行下一批任务,但是核心线程数被占满了,只能等待释放 需要注释掉shutdown,否则直接退出
+            s.scheduleWithFixedDelay(r, 1, 3, TimeUnit.SECONDS);
             n++;
         }
-        s.shutdown();
+//        s.shutdown();
     }
 
 
@@ -124,12 +124,13 @@ public class ThreadPool {
 
     private static void fork() throws InterruptedException {
         // 和newFixedThreadPool没有太大区别?
-        ExecutorService s = Executors.newWorkStealingPool();
-        CountDownLatch cl = new CountDownLatch(15);
+        ExecutorService s = Executors.newWorkStealingPool(8);
+        int nums = 1000000;
+        CountDownLatch cl = new CountDownLatch(nums);
         Integer n = 1;
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         System.out.println(sdf.format(new Date()) + " start");
-        while (n <= 15) {
+        while (n <= nums) {
             CountDownLatchRun r = new CountDownLatchRun(cl);
             r.setName(n.toString());
             s.execute(r);
@@ -142,21 +143,18 @@ public class ThreadPool {
 
     private static void custom() {
         // 使用默认的ThreadPoolExecutor构造器 队列 拒绝策略
-        // https://www.jianshu.com/p/c41e942bcd64
-        // https://upload-images.jianshu.io/upload_images/11183270-a01aea078d7f4178.png?imageMogr2/auto-orient/strip|imageView2/2/w/1200/format/webp
-        ExecutorService s = new ThreadPoolExecutor(2, 3,
+        ExecutorService s = new ThreadPoolExecutor(2, 2,
                 0L, TimeUnit.MILLISECONDS,
                 new LinkedBlockingQueue<Runnable>(2));
         exec(s);
     }
 
-
     public static void main(String[] args) throws InterruptedException {
-        fix();
+//        fix();
 //        cache();
 //        single();
 //        scheduled();
 //        fork();
-//        custom();
+        custom();
     }
 }
